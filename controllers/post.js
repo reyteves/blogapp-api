@@ -49,7 +49,7 @@ module.exports.getSinglePost = (req, res) => {
         });
 };
 
-// Update Blog Post (Author Only)
+// Update Blog Post (Author or Admin)
 module.exports.updatePost = (req, res) => {
     const { title, content } = req.body;
 
@@ -59,9 +59,9 @@ module.exports.updatePost = (req, res) => {
                 return res.status(404).send({ message: 'Post not found' });
             }
 
-            // Authorization Check
-            if (post.author.toString() !== req.user.id) {
-                return res.status(403).send({ message: 'Action Forbidden. You are not the author.' });
+            // Authorization Check: Author or Admin
+            if (post.author.toString() !== req.user.id && !req.user.isAdmin) {
+                return res.status(403).send({ message: 'Action Forbidden. You are not the author or admin.' });
             }
 
             post.title = title || post.title;
@@ -86,7 +86,7 @@ module.exports.deletePost = (req, res) => {
 
             // Authorization Check: Author or Admin
             if (post.author.toString() !== req.user.id && !req.user.isAdmin) {
-                return res.status(403).send({ message: 'Action Forbidden' });
+                return res.status(403).send({ message: 'Action Forbidden. You are not the author or admin.' });
             }
 
             return BlogPost.findByIdAndDelete(req.params.id);
