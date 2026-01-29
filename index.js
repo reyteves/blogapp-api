@@ -13,7 +13,18 @@ const app = express();
 // Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+
+// CORS Configuration - More permissive for development
+// For production, consider restricting to specific origins
+app.use(cors({
+  origin: true, // Allows any origin (development only)
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// Alternative: Completely disable CORS (NOT RECOMMENDED for production)
+// app.use(cors({ origin: '*' }));
 
 // Database Connection
 mongoose.connect(process.env.MONGODB_STRING);
